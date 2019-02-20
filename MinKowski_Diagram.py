@@ -25,18 +25,34 @@ def newline(point, slope, ax):
     l = mlines.Line2D([xmin,xmax], [ymin,ymax], color="yellow")
     ax.add_line(l)
     return l
+
 def set_axis():
-    fig = plt.figure() #Initializes the graph
-    ax = plt.gca() #Creates a graph axis object
-    ax.spines['right'].set_color('none') #Makes the right outside bar of the graph disappear
-    ax.spines['top'].set_color('none') #Makes the top outside bar of the graph dissapear
-    ax.xaxis.set_ticks_position('bottom') #Moves the ticks to the bottom of the graph
-    ax.spines['bottom'].set_position(('data',0)) #Makes a new axix (spine) at center of data 
+    #plt.xlabel('x')
+    #plt.ylabel('ct')
+    fig = plt.figure()
+    ax = plt.gca()
+    plt.xlim(-10,10)
+    plt.ylim(-10,10)
+    #plt.xlabel('Position')
+    #frame = plt.gca()
+    frame.axes.get_xaxis().set_ticks([])
+    frame.axes.get_yaxis().set_ticks([])
+
+    ax = fig.add_subplot(1,1,1)
+    # Move left y-axis and bottim x-axis to centre, passing through (0,0)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('center')
+    
+
+    # Eliminate upper and right axes
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+
+
+    # Show ticks in the left and lower axes only
+    ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
-    ax.spines['left'].set_position(('data',0))#Makes a new axix (spine) at center of data 
-    ax.axes.get_xaxis().set_ticks([])  #Makes ticks invisble 
-    ax.axes.get_yaxis().set_ticks([])  #Makes ticks visible 
-    scale_factor = unit_scale(beta)
+    plt.grid(True)
     return ax, fig
 
 def y_values_fill(slope,intercept,frame):
@@ -45,16 +61,19 @@ def y_values_fill(slope,intercept,frame):
     return y_vals
 
 def light_cone(line1, line2,frame,point):
+    #x_vals = line1.get_ydata()
     x_vals = frame.get_ylim()
     offset = 2*(point[1] - point[0])
     y1_vals = line1.get_ydata()
     y1_vals[0] -= offset
     y1_vals[1] -= offset 
+    #y1_vals = list(np.array(y1_vals) - np.array(offset))
     y2_vals = line2.get_ydata()
     print(offset)
     print(y1_vals)
     print(y2_vals)
     plt.fill_betweenx(x_vals,y1_vals,y2_vals,facecolor='gold',interpolate=True)
+    #plt.fill_between(x_vals,y1_vals,where=y1_vals>=y2_vals,facecolor='gold',interpolate=True)
     
 def alpha(beta):
     return theta(1/((beta*math.pi)/180)) #Returns angle between ct(prime) and the x axis
@@ -78,13 +97,28 @@ def initialize_graph(args):
         plt.ylim(-1 * depth, depth)
 
 def setup(beta, point):
-    
+    fig = plt.figure() #Initializes the graph
+    ax = plt.gca() #Creates a graph axis object
+    ax.spines['right'].set_color('none') #Makes the right outside bar of the graph disappear
+    ax.spines['top'].set_color('none') #Makes the top outside bar of the graph dissapear
+    ax.xaxis.set_ticks_position('bottom') #Moves the ticks to the bottom of the graph
+    ax.spines['bottom'].set_position(('data',0)) #Makes a new axix (spine) at center of data 
+    ax.yaxis.set_ticks_position('left')
+    ax.spines['left'].set_position(('data',0))#Makes a new axix (spine) at center of data 
+    ax.axes.get_xaxis().set_ticks([])  #Makes ticks invisble 
+    ax.axes.get_yaxis().set_ticks([])  #Makes ticks visible 
+    scale_factor = unit_scale(beta)
     #angle_ct = alpha(beta)
     #angle_x = theta(beta)
     angle_ct = beta
     angle_x = 1/beta
     x_offset = 3
     y_offset = 4
+    #p1 = [x_offset +  point_value(10,theta),y_offset + point_value(10,theta)]
+    #p2 = [3+ x_offset +  point_value(10,theta),4 + y_offset + point_value(10,theta)]
+    #newline(p1,p2)
+
+
     plt.ylim(-10,10)
     plt.xlim(-10,10)
     abline(1,0,'green','-',ax)
@@ -106,6 +140,8 @@ def unit_scale(beta):
 def main():
     beta = float(sys.argv[1])
     point = [int(sys.argv[2]),int(sys.argv[3])]
+    print (beta)
+    print (point)
     setup(beta, point)
 
 if __name__ == "__main__":
